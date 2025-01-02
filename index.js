@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import userRouter from "./routes/userRouter.js";
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ connection.once("open", () => {
   console.log("Database Connected");
 });
 
+app.use("/api/users", userRouter);
 app.listen(5000, () => {
     console.log("Server is running on port 5000");
   });
