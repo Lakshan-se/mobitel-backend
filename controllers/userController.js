@@ -1,13 +1,31 @@
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
-
 import dotenv from "dotenv";
 
 dotenv.config();
 
 export function createUser(req, res) {
-  const newUserData = req.body;
-  newUserData.password = bcrypt.hashSync(newUserData.password, 10);
+  const { userType, userName, password } = req.body;
+
+  // Validate required fields
+  if (!userType || !userName || !password ) {
+    return res.status(400).json({
+      message: "All fields are required: userType, userName, password, confirmPassword",
+    });
+  }
+
+
+  // Hash the password
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+  // Create new user object
+  const newUserData = {
+    userType,
+    userName,
+    password: hashedPassword,
+  };
+
+  // Save the user to the database
   const user = new User(newUserData);
 
   user
@@ -19,11 +37,10 @@ export function createUser(req, res) {
     })
     .catch(() => {
       res.json({
-        message: "Error User not created",
+        message: "Error: User not created",
       });
     });
-  }
-
+}
 
 export function loginUser(req, res) {
   const { userName, password } = req.body;
